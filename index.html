@@ -18,7 +18,7 @@
 			max-width: 900px;
 			background: #bcaaa4;
 			padding: 20px;
-			margin: 30px auto;
+			margin: auto;
 			text-align: left;
 			line-height: 30px;
 			box-shadow: 0px 0px 5px rgba(79, 55, 48, 0.8);
@@ -82,7 +82,7 @@
 			height: 70px;
 		}
 		
-		.catalogue {
+		.catalogue-icon {
 			margin: 20px auto;
 			width: 30px;
 			height: 30px;
@@ -90,7 +90,7 @@
 			background-size: 30px 30px;
 		}
 		
-		.font {
+		.font-icon {
 			margin: 20px auto;
 			width: 30px;
 			height: 30px;
@@ -98,7 +98,7 @@
 			background-size: 30px 30px;
 		}
 		
-		.night {
+		.night-icon {
 			margin: 20px auto;
 			width: 30px;
 			height: 30px;
@@ -121,7 +121,6 @@
 			bottom: 70px;
 			width: 100%;
 			height: 50px;
-			background: #795548;
 			box-shadow: 0 -2px 5px rgba(79, 55, 48, 0.8);
 			z-index: 1000;
 		}
@@ -146,7 +145,6 @@
 			bottom: 120px;
 			width: 100%;
 			height: 50px;
-			background: #795548;
 			box-shadow: 0 2px 5px rgba(79, 55, 48, 0.8);
 			z-index: 1003;
 		}
@@ -159,14 +157,14 @@
 			box-shadow: 0 -2px 5px rgba(79, 55, 48, 0.8);
 			z-index: 1002;
 		}
-		#font_change p {
+		.font_change p {
 			display: inline-block;
 			margin: 0 20px;
 			line-height: 50px;
 			text-align: center;
 			color: #eee;
 		}
-		#font_change button {
+		.font_change button {
 			width: 100px;
 			height: 30px;
 			margin: 0 40px 0 0;
@@ -175,7 +173,7 @@
 			border-radius: 3px;
 			color: #eee;
 		}
-		#background_change p {
+		.background_change p {
 			display: inline-block;
 			margin: 0 20px;
 			line-height: 50px;
@@ -216,12 +214,23 @@
 			border: solid 2px #c33;
 			border-radius: 3px;
 		}
+
+		.m-artical-action-mid {
+			position: fixed;
+			top: 30%;
+			width: 100%;
+			height: 40%;
+			z-index: 1005;
+		}
 	</style>
 </head>
 
 <body>
 	<div id="root" class="container">
-		<div class="top-nav">
+		<div class="m-artical-action">
+			<div id="action_mid" class="m-artical-action-mid"></div>
+		</div>
+		<div class="top-nav" style="display: none">
 			<div class="back-icon"></div>
 			<p>返回书架</p>
 		</div>
@@ -265,14 +274,14 @@
 			<p>“怎么？难道做了就想不负责任吗？”皇甫兴国沉了脸，天知道他是如何装的。其实，他跟儿媳妇一样，想看孙媳妇好久了。</p>
 			<p>“负责！”</p>
 		</div>
-		<div id="font_change" class="child-nav-2">
+		<div class="font_change child-nav-2" style="display: none">
 			<div class="child-nav-shadow-2">
 				<p>字体</p>
-				<button>大</button>
-				<button>小</button>
+				<button id="large_button">大</button>
+				<button id="small-button">小</button>
 			</div>
 		</div>
-		<div id="background_change" class="child-nav-1">
+		<div class="background_change child-nav-1" style="display: none">
 			<div class="child-nav-shadow-1">
 				<p>背景</p>
 				<div class="color-theme color-theme-1">
@@ -294,15 +303,15 @@
 				</div>
 			</div>
 		</div>
-		<div class="bottom-nav">
+		<div class="bottom-nav" style="display: none">
 			<div class="bottom-nav-container">
-				<div class="catalogue"></div>
+				<div class="catalogue-icon"></div>
 			</div>
 			<div class="bottom-nav-container">
-				<div class="font"></div>
+				<div class="font-icon"></div>
 			</div>
 			<div class="bottom-nav-container">
-				<div class="night"></div>
+				<div class="night-icon"></div>
 			</div>
 		</div>
 	</div>
@@ -327,9 +336,26 @@
 					storageSetter: storageSetter
 				}
 			})();
-
+			
+			var Dom = {
+				top_nav: $('.top-nav'),
+				bottom_nav: $('.bottom-nav'),
+				chapter_change: $('#chapter_change'),
+				font_icon: $('.font-icon'),
+				night_icon: $('.night-icon'),
+				background_change: $('.background_change'),
+				font_change: $('.font_change'),
+				large_button: $('#large_button'),
+				small_button: $('#small-button'),
+				read_content: $('#read_content')
+			};
+			var win = $(window);
+			var doc = $(document);
+			var initFontSize = parseInt(Util.storageGetter('font_size'),10) || 16;
+			Dom.read_content.css('font-size',initFontSize);
 			function main() {
 				//todo 整个项目的入口函数
+				eventHandler();
 			}
 			
 			function readerModel() {
@@ -342,7 +368,59 @@
 
 			function eventHandler() {
 				// todo 交互的事件绑定
+				$('#action_mid').click(function(){
+					if(Dom.top_nav.css('display') === 'none') {
+						Dom.top_nav.show();
+						Dom.bottom_nav.show();
+						Dom.chapter_change.show();
+					}else {
+						Dom.background_change.hide();
+						Dom.font_change.hide();
+						Dom.top_nav.hide();
+						Dom.bottom_nav.hide();
+						Dom.chapter_change.hide();
+					}
+				});
+
+				Dom.font_icon.click(function() {
+					if(Dom.background_change.css('display') === 'none') {
+						Dom.background_change.show();
+						Dom.font_change.show();
+						Dom.chapter_change.hide();
+					}else {
+						Dom.background_change.hide();
+						Dom.font_change.hide();
+						Dom.chapter_change.show();
+					}
+				});
+
+				Dom.small_button.click(function() {
+					if(initFontSize < 12) {
+						return;
+					}
+					initFontSize -= 1;
+					Dom.read_content.css('font-size',initFontSize);
+					Util.storageSetter('font_size',initFontSize);
+				});
+				Dom.large_button.click(function() {
+					if(initFontSize > 20) {
+						return;
+					}
+					initFontSize += 1;
+					Dom.read_content.css('font-size',initFontSize);
+					Util.storageSetter('font_size',initFontSize);
+				});
+
+				win.scroll(function() {
+					Dom.top_nav.hide();
+					Dom.bottom_nav.hide();
+					Dom.chapter_change.hide();
+					Dom.background_change.hide();
+					Dom.font_change.hide();
+				});
 			}
+
+			main();
 		})();
 	</script>
 </body>
