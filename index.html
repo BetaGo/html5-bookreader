@@ -105,6 +105,13 @@
 			background: url(icon/moon_w.png);
 			background-size: 30px 30px;
 		}
+		.day-icon {
+			margin: 20px auto;
+			width: 30px;
+			height: 30px;
+			background: url(icon/sun_w.png);
+			background-size: 30px 30px;
+		}
 		
 		.child-nav-1 {
 			position: fixed;
@@ -165,9 +172,10 @@
 			color: #eee;
 		}
 		.font_change button {
-			width: 100px;
+			width: 28%;
+			max-width: 100px;
 			height: 30px;
-			margin: 0 40px 0 0;
+			margin: 0 5% 0 0;
 			background: #4e342e;
 			border: none;
 			border-radius: 3px;
@@ -186,7 +194,7 @@
 			display: inline-block;
 			width: 30px;
 			height: 30px;
-			margin: 0 20px 10px 0;
+			margin: 0 3% 10px 0;
 			border-radius: 3px;
 			z-index: 1004;
 		}
@@ -194,7 +202,7 @@
 			background: #e9dfc7;
 		}
 		.color-theme-2 {
-			background: #a4a4a4;
+			background: #bcaaa4;
 		}
 		.color-theme-3 {
 			background: #cdefce;
@@ -285,12 +293,20 @@
 			<div class="child-nav-shadow-1">
 				<p>背景</p>
 				<div class="color-theme color-theme-1">
-					<div class="color-theme-selected"></div>
+					<div id="color_theme_1"></div>
 				</div>
-				<div class="color-theme color-theme-2"></div>
-				<div class="color-theme color-theme-3"></div>
-				<div class="color-theme color-theme-4"></div>
-				<div class="color-theme color-theme-5"></div>
+				<div class="color-theme color-theme-2">
+					<div id="color_theme_2"></div>
+				</div>
+				<div class="color-theme color-theme-3">
+					<div id="color_theme_3"></div>
+				</div>
+				<div class="color-theme color-theme-4">
+					<div id="color_theme_4"></div>
+				</div>
+				<div class="color-theme color-theme-5">
+					<div id="color_theme_5"></div>
+				</div>
 			</div>
 		</div>
 		<div id="chapter_change" class="child-nav-1" style="display: none">
@@ -311,7 +327,7 @@
 				<div class="font-icon"></div>
 			</div>
 			<div class="bottom-nav-container">
-				<div class="night-icon"></div>
+				<div id="day_night_icon"></div>
 			</div>
 		</div>
 	</div>
@@ -341,18 +357,34 @@
 				top_nav: $('.top-nav'),
 				bottom_nav: $('.bottom-nav'),
 				chapter_change: $('#chapter_change'),
+				catalogue_icon: $('.catalogue-icon'),
 				font_icon: $('.font-icon'),
-				night_icon: $('.night-icon'),
+				day_night_icon: $('#day_night_icon'),
 				background_change: $('.background_change'),
 				font_change: $('.font_change'),
 				large_button: $('#large_button'),
 				small_button: $('#small-button'),
-				read_content: $('#read_content')
+				read_content: $('#read_content'),
+				color_theme_1: $('#color_theme_1'),
+				color_theme_2: $('#color_theme_2'),
+				color_theme_3: $('#color_theme_3'),
+				color_theme_4: $('#color_theme_4'),
+				color_theme_5: $('#color_theme_5')
 			};
 			var win = $(window);
 			var doc = $(document);
 			var initFontSize = parseInt(Util.storageGetter('font_size'),10) || 16;
 			Dom.read_content.css('font-size',initFontSize);
+			var initBackground = Util.storageGetter('background') || '#bcaaa4';
+			Dom.read_content.css('background',initBackground);
+			var initColor = Util.storageGetter('color',initColor);
+			Dom.read_content.css('color',initColor);
+			var initSelected = Util.storageGetter('selected') || '2';
+			$(`#color_theme_${initSelected}`).addClass('color-theme-selected');
+			var initDayNightIcon = Util.storageGetter('day_night_icon') || 'night-icon';
+			console.log(Util.storageGetter('day_night_icon'));
+			console.log(initDayNightIcon);
+			Dom.day_night_icon.addClass(initDayNightIcon);
 			function main() {
 				//todo 整个项目的入口函数
 				eventHandler();
@@ -393,6 +425,35 @@
 						Dom.chapter_change.show();
 					}
 				});
+				Dom.day_night_icon.click(function() {
+					if(Dom.day_night_icon.hasClass('night-icon')) {
+						Dom.color_theme_2.removeClass('color-theme-selected');
+						Dom.color_theme_3.removeClass('color-theme-selected');
+						Dom.color_theme_4.removeClass('color-theme-selected');
+						Dom.color_theme_1.removeClass('color-theme-selected');
+						Dom.read_content.css('background','#0f1410').css('color','#4e534f');
+						Dom.color_theme_5.addClass('color-theme-selected');
+						Dom.day_night_icon.removeClass('night-icon');
+						Dom.day_night_icon.addClass('day-icon');
+						Util.storageSetter('background','#0f1410');
+						Util.storageSetter('color','#4e534f');
+						Util.storageSetter('selected',5);
+						Util.storageSetter('day_night_icon','day-icon');
+					}else {
+						Dom.color_theme_1.removeClass('color-theme-selected');
+						Dom.color_theme_3.removeClass('color-theme-selected');
+						Dom.color_theme_4.removeClass('color-theme-selected');
+						Dom.color_theme_5.removeClass('color-theme-selected');
+						Dom.read_content.css('background','#bcaaa4').css('color','#555');
+						Dom.color_theme_2.addClass('color-theme-selected');
+						Dom.day_night_icon.removeClass('day-icon');
+						Dom.day_night_icon.addClass('night-icon');						
+						Util.storageSetter('background','#bcaaa4');
+						Util.storageSetter('color','#555');
+						Util.storageSetter('selected',2);	
+						Util.storageSetter('day_night_icon','night-icon');					
+					}
+				});
 
 				Dom.small_button.click(function() {
 					if(initFontSize < 12) {
@@ -418,6 +479,78 @@
 					Dom.background_change.hide();
 					Dom.font_change.hide();
 				});
+
+				$('.color-theme-1').click(function() {
+					Dom.color_theme_2.removeClass('color-theme-selected');
+					Dom.color_theme_3.removeClass('color-theme-selected');
+					Dom.color_theme_4.removeClass('color-theme-selected');
+					Dom.color_theme_5.removeClass('color-theme-selected');
+					Dom.read_content.css('background','#e9dfc7').css('color','#555');
+					Dom.color_theme_1.addClass('color-theme-selected');
+					Dom.day_night_icon.removeClass('day-icon');
+					Dom.day_night_icon.addClass('night-icon');
+					Util.storageSetter('background','#e9dfc7');
+					Util.storageSetter('color','#555');
+					Util.storageSetter('selected',1);
+					Util.storageSetter('day_night_icon','night-icon');
+				});
+				$('.color-theme-2').click(function() {
+					Dom.color_theme_1.removeClass('color-theme-selected');
+					Dom.color_theme_3.removeClass('color-theme-selected');
+					Dom.color_theme_4.removeClass('color-theme-selected');
+					Dom.color_theme_5.removeClass('color-theme-selected');
+					Dom.read_content.css('background','#bcaaa4').css('color','#555');
+					Dom.color_theme_2.addClass('color-theme-selected');
+					Dom.day_night_icon.removeClass('day-icon');
+					Dom.day_night_icon.addClass('night-icon');						
+					Util.storageSetter('background','#bcaaa4');
+					Util.storageSetter('color','#555');
+					Util.storageSetter('selected',2);
+					Util.storageSetter('day_night_icon','night-icon');
+				});
+				$('.color-theme-3').click(function() {
+					Dom.color_theme_2.removeClass('color-theme-selected');
+					Dom.color_theme_1.removeClass('color-theme-selected');
+					Dom.color_theme_4.removeClass('color-theme-selected');
+					Dom.color_theme_5.removeClass('color-theme-selected');
+					Dom.read_content.css('background','#cdefce').css('color','#555');
+					Dom.color_theme_3.addClass('color-theme-selected');
+					Dom.day_night_icon.removeClass('day-icon');
+					Dom.day_night_icon.addClass('night-icon');
+					Util.storageSetter('background','#cdefce');
+					Util.storageSetter('color','#555');
+					Util.storageSetter('selected',3);
+					Util.storageSetter('day_night_icon','night-icon');
+				});
+				$('.color-theme-4').click(function() {
+					Dom.color_theme_2.removeClass('color-theme-selected');
+					Dom.color_theme_3.removeClass('color-theme-selected');
+					Dom.color_theme_1.removeClass('color-theme-selected');
+					Dom.color_theme_5.removeClass('color-theme-selected');
+					Dom.read_content.css('background','#283548').css('color','#7685a2');
+					Dom.color_theme_4.addClass('color-theme-selected');
+					Dom.day_night_icon.removeClass('day-icon');
+					Dom.day_night_icon.addClass('night-icon');
+					Util.storageSetter('background','#283548');
+					Util.storageSetter('color','#7685a2');
+					Util.storageSetter('selected',4);
+					Util.storageSetter('day_night_icon','night-icon');
+				});
+				$('.color-theme-5').click(function() {
+					Dom.color_theme_2.removeClass('color-theme-selected');
+					Dom.color_theme_3.removeClass('color-theme-selected');
+					Dom.color_theme_4.removeClass('color-theme-selected');
+					Dom.color_theme_1.removeClass('color-theme-selected');
+					Dom.read_content.css('background','#0f1410').css('color','#4e534f');
+					Dom.color_theme_5.addClass('color-theme-selected');
+					Dom.day_night_icon.removeClass('night-icon');
+					Dom.day_night_icon.addClass('day-icon');
+					Util.storageSetter('background','#0f1410');
+					Util.storageSetter('color','#4e534f');
+					Util.storageSetter('selected',5);
+					Util.storageSetter('day_night_icon','day-icon');
+				});
+				
 			}
 
 			main();
